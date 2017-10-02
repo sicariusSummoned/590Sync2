@@ -1,0 +1,34 @@
+{
+  "name": "590sync2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\"",
+    "nodemon": "nodemon --watch ./src ./src/server.js",
+    "build" : "babel ./client --out-file ./hosted/es5conversion.js",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sicariusSummoned/590Sync2.git"
+  },
+  "author": "James Taggart",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sicariusSummoned/590Sync2/issues"
+  },
+  "homepage": "https://github.com/sicariusSummoned/590Sync2#readme",
+  "dependencies": {
+    "socket.io": "^2.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^4.8.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "nodemon": "^1.12.1"
+  }
+}
