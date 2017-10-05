@@ -75,17 +75,19 @@ const loadWave = (wave) => {
 
   switch (wave) {
     case 0:
-      waveData.enemies = gameData.waves.wave1.waveEnemies;
+      Object.assign(waveData.enemies,gameData.waves.wave1.waveEnemies);
       waveData.waveName = gameData.waves.wave1.waveName;
       break;
     case 1:
       console.log('wave 1 reached');
-      waveData.enemies = gameData.waves.wave2.waveEnemies;
+      Object.assign(waveData.enemies,gameData.waves.wave2.waveEnemies);
       waveData.waveName = gameData.waves.wave2.waveName;
       break;
     default:
-      waveData.enemies = gameData.waves.waveEND.waveEnemies;
-      waveData.waveName = gameData.waves.waveEND.waveName;
+      Object.assign(waveData.enemies,gameData.waves.wave1.waveEnemies);
+      waveData.waveName = gameData.waves.wave1.waveName;
+      //waveData.enemies = gameData.waves.waveEND.waveEnemies;
+      //waveData.waveName = gameData.waves.waveEND.waveName;
       console.log('Game Over');
       break;
   }
