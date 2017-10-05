@@ -60,7 +60,7 @@ const serverUpdate = () => {
     currentWave++;
     serverVariables.serverEnemies = game.loadWave(currentWave).enemies;
     serverVariables.waveName = game.loadWave(currentWave).waveName;
-
+    
   }
   sendUpdate();
 };

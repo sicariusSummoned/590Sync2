@@ -1,4 +1,4 @@
-const waves = {
+const waves = Object.freeze({
   wave1: {
     waveName: 'Round One',
     waveEnemies: {
@@ -81,7 +81,7 @@ const waves = {
       },
     },
   },
-};
+});
 module.exports = {
   waves,
 };

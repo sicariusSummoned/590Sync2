@@ -1,3 +1,5 @@
+let deepCopy = require('lodash/cloneDeep.js');
+
 const gameData = require('./gameData.js');
 
 
@@ -53,11 +55,15 @@ const isWaveOver = (data) => {
     const enemies = data;
     const keys = Object.keys(enemies);
 
+
+
     if (keys.length === 0) {
+      console.dir(keys);
+      console.dir(enemies);
       return true;
     }
     return false;
-  }else{
+  } else {
     return true;
   }
 
@@ -66,31 +72,33 @@ const isWaveOver = (data) => {
 
 const loadWave = (wave) => {
   console.log(`Loading wave ${wave}`);
-  
+
   let waveData = {
-    enemies:{},
-    waveName:"null",
+    enemies: {},
+    waveName: "null",
   }
 
 
   switch (wave) {
     case 0:
-      Object.assign(waveData.enemies,gameData.waves.wave1.waveEnemies);
+      waveData.enemies = deepCopy(gameData.waves.wave1.waveEnemies);
       waveData.waveName = gameData.waves.wave1.waveName;
       break;
     case 1:
       console.log('wave 1 reached');
-      Object.assign(waveData.enemies,gameData.waves.wave2.waveEnemies);
+      waveData.enemies = deepCopy(gameData.waves.wave2.waveEnemies);
       waveData.waveName = gameData.waves.wave2.waveName;
       break;
     default:
-      Object.assign(waveData.enemies,gameData.waves.wave1.waveEnemies);
+      waveData.enemies = deepCopy(gameData.waves.wave1.waveEnemies);
       waveData.waveName = gameData.waves.wave1.waveName;
       //waveData.enemies = gameData.waves.waveEND.waveEnemies;
       //waveData.waveName = gameData.waves.waveEND.waveName;
       console.log('Game Over');
       break;
   }
+
+
   return waveData;
 };
 

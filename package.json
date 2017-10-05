@@ -8,7 +8,7 @@
     "pretest": "eslint ./src --fix",
     "test": "echo \"Tests complete\"",
     "nodemon": "nodemon --watch ./src ./src/server.js",
-    "build" : "babel ./client --out-file ./hosted/es5conversion.js",
+    "build": "babel ./client --out-file ./hosted/es5conversion.js",
     "watch": "babel --watch ./client --out-file ./hosted/es5conversion.js"
   },
   "repository": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/sicariusSummoned/590Sync2#readme",
   "dependencies": {
+    "lodash": "^4.17.4",
     "socket.io": "^2.0.3"
   },
   "devDependencies": {
