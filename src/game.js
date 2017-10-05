@@ -4,7 +4,7 @@ const gameData = require('./gameData.js');
 
 
 const moveEnemies = (data) => {
-  if (data != null && data != undefined) {
+  if (data !== null && data !== undefined) {
     const enemies = data;
 
     const keys = Object.keys(enemies);
@@ -16,10 +16,11 @@ const moveEnemies = (data) => {
     }
     return enemies;
   }
+  return null;
 };
 
 const checkEnemyPosition = (data, barrierHeight) => {
-  if (data != null && data != undefined) {
+  if (data !== null && data !== undefined) {
     const enemies = data;
 
     const keys = Object.keys(enemies);
@@ -32,10 +33,11 @@ const checkEnemyPosition = (data, barrierHeight) => {
     }
     return enemies;
   }
+  return null;
 };
 
 const cullDead = (data) => {
-  if (data != null && data != undefined) {
+  if (data !== null && data !== undefined) {
 
     const enemies = data;
     const keys = Object.keys(enemies);
@@ -48,10 +50,11 @@ const cullDead = (data) => {
     }
     return enemies;
   }
+  return null;
 };
 
 const isWaveOver = (data) => {
-  if (data != null && data != undefined) {
+  if (data !== null && data !== undefined) {
     const enemies = data;
     const keys = Object.keys(enemies);
 
@@ -66,6 +69,7 @@ const isWaveOver = (data) => {
   } else {
     return true;
   }
+  return null;
 
 };
 
@@ -106,12 +110,10 @@ const loadWave = (wave) => {
 const checkHitClaim = (data, id) => {
   const enemies = data;
   const enemy = enemies[id];
-  console.dir(enemy);
 
   if (enemy && enemy.hp > 0) {
     enemy.hp--;
     enemies[enemy.id] = enemy;
-    return enemies;
   }
   return enemies;
 };
