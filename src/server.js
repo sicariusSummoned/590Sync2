@@ -5,7 +5,9 @@ const fs = require('fs');
 
 const PORT = process.env.PORT || process.env.NODE_PORT || 3000;
 
-const currentWave = 0;
+let currentWave = 0;
+
+let runOnce = false;
 
 const handler = (request, response) => {
   if (request.url === '/es5conversion.js') {
@@ -41,19 +43,22 @@ const io = socketio(app);
 
 app.listen(PORT);
 
-const serverVariables = {
+let serverVariables = {
   serverCrosshairs: {},
   serverEnemies: {},
 };
 
 const sendUpdate = () => {
-  // const socket = sock;
   io.sockets.in('room1').emit('updateScreen', serverVariables);
 };
 
 const serverUpdate = () => {
-  serverVariables.serverEnemies = game.update(serverVariables, currentWave);
-  console.log('update called');
+  game.update(serverVariables.serverEnemies, currentWave, 800);
+  if (game.isWaveOver(serverVariables.serverEnemies) === true) {
+    currentWave++;
+    serverVariables.serverEnemies = game.loadWave(currentWave);
+
+  }
   sendUpdate();
 };
 
@@ -69,11 +74,11 @@ const onNewUser = (sock) => {
     io.sockets.in('room1').emit('updateScreen', serverVariables);
     console.log(`User:${socket.id} has joined.`);
     console.dir(serverVariables.serverCrosshairs);
-    console.log(`Server Enemies:${serverVariables.serverEnemies}`);
-    console.dir(serverVariables.serverEnemies);
 
-    setInterval(serverUpdate, 500);
-
+    if (runOnce === false) {
+      setInterval(serverUpdate, 30);
+      runOnce = true;
+    }
   });
 };
 
@@ -98,11 +103,21 @@ const onDisconnect = (sock) => {
   });
 };
 
+const onHitClaim = (sock) => {
+  const socket = sock;
+
+  socket.on('playerHitClaim', (sentID) => {
+    serverVariables.serverEnemies = game.checkHitClaim(serverVariables.serverEnemies, sentID);
+    
+    sendUpdate();
+  });
+};
 
 io.on('connection', (socket) => {
   console.log('connection started');
   serverVariables.serverEnemies = game.loadWave(0);
 
+  onHitClaim(socket);
   onNewUser(socket);
   onClientMoved(socket);
   onDisconnect(socket);

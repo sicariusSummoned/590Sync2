@@ -2,54 +2,65 @@ const gameData = require('./gameData.js');
 
 
 const moveEnemies = (data) => {
-  const enemies = data;
+  if (data != null && data != undefined) {
+    const enemies = data;
 
-  const keys = Object.keys(enemies);
+    const keys = Object.keys(enemies);
 
-  for (let i = 0; i < keys.length; i++) {
-    const enemy = enemies[keys[i]];
-    enemy.y += enemy.speed;
-    enemies[keys[i]] = enemy;
+    for (let i = 0; i < keys.length; i++) {
+      const enemy = enemies[keys[i]];
+      enemy.y += enemy.speed;
+      enemies[keys[i]] = enemy;
+    }
+    return enemies;
   }
-  return enemies;
 };
 
 const checkEnemyPosition = (data, barrierHeight) => {
-  const enemies = data;
+  if (data != null && data != undefined) {
+    const enemies = data;
 
-  const keys = Object.keys(enemies);
+    const keys = Object.keys(enemies);
 
-  for (let i = 0; i < keys.length; i++) {
-    const enemy = enemies[keys[i]];
-    if (enemy.y > barrierHeight) {
-      delete enemies[keys[i]];
+    for (let i = 0; i < keys.length; i++) {
+      const enemy = enemies[keys[i]];
+      if (enemy.y > barrierHeight) {
+        delete enemies[keys[i]];
+      }
     }
+    return enemies;
   }
-  return enemies;
 };
 
 const cullDead = (data) => {
-  const enemies = data;
-  const keys = Object.keys(enemies);
+  if (data != null && data != undefined) {
 
-  for (let i = 0; i < keys.length; i++) {
-    const enemy = enemies[keys[i]];
-    console.dir(enemy);
-    if (enemy.hp <= 0) {
-      delete enemies[keys[i]];
+    const enemies = data;
+    const keys = Object.keys(enemies);
+
+    for (let i = 0; i < keys.length; i++) {
+      const enemy = enemies[keys[i]];
+      if (enemy.hp <= 0) {
+        delete enemies[keys[i]];
+      }
     }
+    return enemies;
   }
-  return enemies;
 };
 
 const isWaveOver = (data) => {
-  const enemies = data;
-  const keys = Object.keys(enemies);
+  if (data != null && data != undefined) {
+    const enemies = data;
+    const keys = Object.keys(enemies);
 
-  if (keys.length === 0) {
+    if (keys.length === 0) {
+      return true;
+    }
+    return false;
+  }else{
     return true;
   }
-  return false;
+
 };
 
 
@@ -63,11 +74,12 @@ const loadWave = (wave) => {
       enemies = gameData.waves.wave1.waveEnemies;
       break;
     case 1:
+      console.log('wave 1 reached');
       enemies = gameData.waves.wave2.waveEnemies;
       break;
     default:
-      enemies = gameData.waves.wave1.waveEnemies;
-      console.log('Wave out of bounds, loading wave 1');
+      enemies = gameData.waves.waveEND.waveEnemies;
+      console.log('Game Over');
       break;
   }
   return enemies;
@@ -77,6 +89,7 @@ const loadWave = (wave) => {
 const checkHitClaim = (data, id) => {
   const enemies = data;
   const enemy = enemies[id];
+  console.dir(enemy);
 
   if (enemy && enemy.hp > 0) {
     enemy.hp--;
@@ -87,22 +100,17 @@ const checkHitClaim = (data, id) => {
 };
 
 
-const update = (data, waveVar) => {
+const update = (data, waveVar, canvasHeight) => {
   let enemies = data;
-  let currentWave = waveVar;
 
   enemies = cullDead(enemies);
-  enemies = checkEnemyPosition(enemies);
+  enemies = checkEnemyPosition(enemies, canvasHeight);
   enemies = moveEnemies(enemies);
-
-  if (isWaveOver(enemies)) {
-    currentWave++;
-    enemies = loadWave(enemies, currentWave);
-  }
 };
 
 module.exports = {
   update,
   loadWave,
   checkHitClaim,
+  isWaveOver,
 };

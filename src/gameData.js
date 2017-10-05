@@ -13,8 +13,8 @@ const waves = {
       },
       1: {
         id: 1,
-        x: 100,
-        y: 0,
+        x: 200,
+        y: -50,
         radius: 30,
         color: 'green',
         speed: 2,
@@ -23,8 +23,8 @@ const waves = {
       },
       2: {
         id: 2,
-        x: 300,
-        y: 0,
+        x: 600,
+        y: -100,
         radius: 30,
         color: 'green',
         speed: 2,
@@ -64,6 +64,20 @@ const waves = {
         speed: 4,
         hp: 1,
 
+      },
+    },
+  },
+  waveEND: {
+    waveName: 'GAME OVER',
+    waveEnemies: {
+      0: {
+        id: 0,
+        x: 50,
+        y: -1000,
+        radius: 30,
+        color: 'green',
+        speed: 0,
+        hp: 1,
       },
     },
   },

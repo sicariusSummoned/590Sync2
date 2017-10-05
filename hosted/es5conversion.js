@@ -34,6 +34,30 @@ var createUser = function createUser() {
   console.dir(crossHairs[userID]);
 };
 
+var checkForHits = function checkForHits() {
+  if (enemies != null && enemies != undefined) {
+    var keys = Object.keys(enemies);
+
+    console.log('MouseX:' + mousePosition.x + ' MouseY:' + mousePosition.y);
+
+    for (var i = 0; i < keys.length; i++) {
+      var target = enemies[keys[i]];
+
+      console.log('TargetX:' + target.x + ' TargetY:' + target.y);
+
+      if (mousePosition.x < target.x + target.radius && mousePosition.x > target.x - target.radius) {
+        console.log('x hit correct');
+        if (mousePosition.y < target.y + target.radius && mousePosition.y > target.y - target.radius) {
+          console.log('hit registered');
+          socket.emit('playerHitClaim', target.id);
+        }
+      }
+    }
+  }
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+};
+
 var drawScreen = function drawScreen(data) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawEnemies(data.serverEnemies);
@@ -41,16 +65,20 @@ var drawScreen = function drawScreen(data) {
 };
 
 var drawEnemies = function drawEnemies(data) {
-  enemies = data;
+  if (data != null && data != undefined) {
+    enemies = data;
 
-  var keys = Object.keys(enemies);
+    var keys = Object.keys(enemies);
 
-  for (var i = 0; i < keys.length; i++) {
-    var drawCall = enemies[keys[i]];
-    ctx.fillStyle = drawCall.color;
-    ctx.beginPath();
-    ctx.arc(drawCall.x, drawCall.y, drawCall.radius, 0, 2 * Math.PI);
-    ctx.fill();
+    for (var i = 0; i < keys.length; i++) {
+      var drawCall = enemies[keys[i]];
+      ctx.fillStyle = drawCall.color;
+      ctx.beginPath();
+      ctx.arc(drawCall.x, drawCall.y, drawCall.radius, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  } else {
+    console.log('Enemy data is null');
   }
 };
 
@@ -102,6 +130,8 @@ var init = function init() {
   window.addEventListener('mousemove', function (evt) {
     mousePosition = getMousePosition(canvas, evt);
   }, false);
+
+  window.addEventListener('click', checkForHits);
 };
 
 window.onload = init;

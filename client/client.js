@@ -32,6 +32,31 @@ const createUser = () => {
   console.dir(crossHairs[userID]);
 };
 
+const checkForHits = () => {
+  if (enemies != null && enemies != undefined) {
+    let keys = Object.keys(enemies);
+
+    console.log(`MouseX:${mousePosition.x} MouseY:${mousePosition.y}`);
+
+
+    for (let i = 0; i < keys.length; i++) {
+      const target = enemies[keys[i]];
+
+      console.log(`TargetX:${target.x} TargetY:${target.y}`);
+
+      if (mousePosition.x < target.x + target.radius && mousePosition.x > target.x - target.radius) {
+        console.log('x hit correct');
+        if (mousePosition.y < target.y + target.radius && mousePosition.y > target.y - target.radius) {
+          console.log('hit registered');
+          socket.emit('playerHitClaim', target.id);
+        }
+      }
+    }
+  }
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+};
+
 const drawScreen = (data) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawEnemies(data.serverEnemies);
@@ -39,17 +64,23 @@ const drawScreen = (data) => {
 };
 
 const drawEnemies = (data) => {
-  enemies = data;
+  if (data != null && data != undefined) {
+    enemies = data;
 
-  let keys = Object.keys(enemies);
+    let keys = Object.keys(enemies);
 
-  for (let i = 0; i < keys.length; i++) {
-    const drawCall = enemies[keys[i]];
-    ctx.fillStyle = drawCall.color;
-    ctx.beginPath();
-    ctx.arc(drawCall.x,drawCall.y,drawCall.radius,0,2*Math.PI);
-    ctx.fill();
+    for (let i = 0; i < keys.length; i++) {
+      const drawCall = enemies[keys[i]];
+      ctx.fillStyle = drawCall.color;
+      ctx.beginPath();
+      ctx.arc(drawCall.x, drawCall.y, drawCall.radius, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  } else {
+    console.log('Enemy data is null');
   }
+
+
 };
 
 const drawCrosshairs = (data) => {
@@ -60,7 +91,7 @@ const drawCrosshairs = (data) => {
   for (let i = 0; i < keys.length; i++) {
     const drawCall = crossHairs[keys[i]];
     ctx.fillStyle = drawCall.color;
-    ctx.fillRect(drawCall.x -drawCall.width/2, drawCall.y -drawCall.height/2, drawCall.width, drawCall.height);
+    ctx.fillRect(drawCall.x - drawCall.width / 2, drawCall.y - drawCall.height / 2, drawCall.width, drawCall.height);
   }
 };
 
@@ -68,7 +99,7 @@ const clientMoved = (passedPosition) => {
   crossHairs[myID].x = passedPosition.x;
   crossHairs[myID].y = passedPosition.y;
 
-  
+
   socket.emit('clientMoved', crossHairs[myID]);
 };
 
@@ -97,11 +128,12 @@ const init = () => {
   socket.on('updateScreen', drawScreen);
   displayUserID = document.querySelector("#playerID");
   setInterval(sendUpdate, 20);
-  
-  window.addEventListener('mousemove', function(evt){
+
+  window.addEventListener('mousemove', function (evt) {
     mousePosition = getMousePosition(canvas, evt);
-  },false);
-  
+  }, false);
+
+  window.addEventListener('click', checkForHits);
 }
 
 
