@@ -72,9 +72,8 @@ const onNewUser = (sock) => {
     console.log(`Server Enemies:${serverVariables.serverEnemies}`);
     console.dir(serverVariables.serverEnemies);
 
-    if (io.sockets.length === 1) {
-      setInterval(serverUpdate(), 500);
-    }
+    setInterval(serverUpdate, 500);
+
   });
 };
 

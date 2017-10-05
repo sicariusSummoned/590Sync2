@@ -41,7 +41,6 @@ var drawScreen = function drawScreen(data) {
 };
 
 var drawEnemies = function drawEnemies(data) {
-  console.dir(data);
   enemies = data;
 
   var keys = Object.keys(enemies);

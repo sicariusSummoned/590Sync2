@@ -34,6 +34,7 @@ const cullDead = (data) => {
 
   for (let i = 0; i < keys.length; i++) {
     const enemy = enemies[keys[i]];
+    console.dir(enemy);
     if (enemy.hp <= 0) {
       delete enemies[keys[i]];
     }

@@ -39,7 +39,6 @@ const drawScreen = (data) => {
 };
 
 const drawEnemies = (data) => {
-  console.dir(data);
   enemies = data;
 
   let keys = Object.keys(enemies);
