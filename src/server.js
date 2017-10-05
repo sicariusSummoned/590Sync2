@@ -43,9 +43,11 @@ const io = socketio(app);
 
 app.listen(PORT);
 
+
 let serverVariables = {
   serverCrosshairs: {},
   serverEnemies: {},
+  waveName: "null",
 };
 
 const sendUpdate = () => {
@@ -56,7 +58,8 @@ const serverUpdate = () => {
   game.update(serverVariables.serverEnemies, currentWave, 800);
   if (game.isWaveOver(serverVariables.serverEnemies) === true) {
     currentWave++;
-    serverVariables.serverEnemies = game.loadWave(currentWave);
+    serverVariables.serverEnemies = game.loadWave(currentWave).enemies;
+    serverVariables.waveName = game.loadWave(currentWave).waveName;
 
   }
   sendUpdate();
@@ -115,7 +118,8 @@ const onHitClaim = (sock) => {
 
 io.on('connection', (socket) => {
   console.log('connection started');
-  serverVariables.serverEnemies = game.loadWave(0);
+  serverVariables.serverEnemies = game.loadWave(0).enemies;
+  serverVariables.waveName = game.loadWave(0).waveName;
 
   onHitClaim(socket);
   onNewUser(socket);

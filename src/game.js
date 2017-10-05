@@ -66,23 +66,30 @@ const isWaveOver = (data) => {
 
 const loadWave = (wave) => {
   console.log(`Loading wave ${wave}`);
-  let enemies = gameData.waves.wave1.waveEnemies;
+  
+  let waveData = {
+    enemies:{},
+    waveName:"null",
+  }
 
 
   switch (wave) {
     case 0:
-      enemies = gameData.waves.wave1.waveEnemies;
+      waveData.enemies = gameData.waves.wave1.waveEnemies;
+      waveData.waveName = gameData.waves.wave1.waveName;
       break;
     case 1:
       console.log('wave 1 reached');
-      enemies = gameData.waves.wave2.waveEnemies;
+      waveData.enemies = gameData.waves.wave2.waveEnemies;
+      waveData.waveName = gameData.waves.wave2.waveName;
       break;
     default:
-      enemies = gameData.waves.waveEND.waveEnemies;
+      waveData.enemies = gameData.waves.waveEND.waveEnemies;
+      waveData.waveName = gameData.waves.waveEND.waveName;
       console.log('Game Over');
       break;
   }
-  return enemies;
+  return waveData;
 };
 
 

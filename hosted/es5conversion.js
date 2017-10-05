@@ -3,6 +3,7 @@
 var canvas = void 0;
 var ctx = void 0;
 var displayUserID = void 0;
+var displayWaveName = void 0;
 var socket = void 0;
 
 var crossHairs = {};
@@ -15,7 +16,7 @@ var mousePosition = {
 var myID = void 0;
 
 var createUser = function createUser() {
-  var userID = Math.floor(Math.random() * 10000000000000000).toString();
+  var userID = Math.floor(Math.random() * 10000000).toString();
   myID = userID;
 
   var color = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')';
@@ -59,9 +60,11 @@ var checkForHits = function checkForHits() {
 };
 
 var drawScreen = function drawScreen(data) {
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawEnemies(data.serverEnemies);
   drawCrosshairs(data.serverCrosshairs);
+  displayWaveName.innerText = data.waveName;
 };
 
 var drawEnemies = function drawEnemies(data) {
@@ -118,6 +121,7 @@ var init = function init() {
   canvas = document.querySelector("#canvas");
   ctx = canvas.getContext("2d");
   socket = io.connect();
+
   socket.on('connect', function () {
     createUser();
     displayUserID.innerText = myID;
@@ -125,6 +129,7 @@ var init = function init() {
 
   socket.on('updateScreen', drawScreen);
   displayUserID = document.querySelector("#playerID");
+  displayWaveName = document.querySelector("#waveName");
   setInterval(sendUpdate, 20);
 
   window.addEventListener('mousemove', function (evt) {

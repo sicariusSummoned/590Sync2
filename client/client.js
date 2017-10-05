@@ -1,6 +1,7 @@
 let canvas;
 let ctx;
 let displayUserID;
+let displayWaveName;
 let socket;
 
 let crossHairs = {};
@@ -13,7 +14,7 @@ let mousePosition = {
 let myID;
 
 const createUser = () => {
-  let userID = Math.floor(Math.random() * 10000000000000000).toString();
+  let userID = Math.floor(Math.random() * 10000000).toString();
   myID = userID;
 
   let color = `rgb(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)})`;
@@ -58,9 +59,11 @@ const checkForHits = () => {
 };
 
 const drawScreen = (data) => {
+  
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawEnemies(data.serverEnemies);
   drawCrosshairs(data.serverCrosshairs);
+  displayWaveName.innerText = data.waveName;
 };
 
 const drawEnemies = (data) => {
@@ -120,6 +123,9 @@ const init = () => {
   canvas = document.querySelector("#canvas");
   ctx = canvas.getContext("2d");
   socket = io.connect();
+  
+  
+  
   socket.on('connect', () => {
     createUser();
     displayUserID.innerText = myID;
@@ -127,6 +133,7 @@ const init = () => {
 
   socket.on('updateScreen', drawScreen);
   displayUserID = document.querySelector("#playerID");
+  displayWaveName = document.querySelector("#waveName");
   setInterval(sendUpdate, 20);
 
   window.addEventListener('mousemove', function (evt) {
