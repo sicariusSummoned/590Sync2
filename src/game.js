@@ -66,10 +66,8 @@ const isWaveOver = (data) => {
       return true;
     }
     return false;
-  } else {
-    return true;
   }
-  return null;
+  return true;
 
 };
 
@@ -125,6 +123,7 @@ const update = (data, waveVar, canvasHeight) => {
   enemies = cullDead(enemies);
   enemies = checkEnemyPosition(enemies, canvasHeight);
   enemies = moveEnemies(enemies);
+  return enemies;
 };
 
 module.exports = {
