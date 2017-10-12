@@ -6,8 +6,8 @@ const fs = require('fs');
 const PORT = process.env.PORT || process.env.NODE_PORT || 3000;
 
 let currentWave = 0;
-
 let runOnce = false;
+let hp = game.getHealth();
 
 const handler = (request, response) => {
   if (request.url === '/es5conversion.js') {
@@ -48,6 +48,7 @@ let serverVariables = {
   serverCrosshairs: {},
   serverEnemies: {},
   waveName: "null",
+  serverHealth: hp,
 };
 
 const sendUpdate = () => {
@@ -56,12 +57,23 @@ const sendUpdate = () => {
 
 const serverUpdate = () => {
   game.update(serverVariables.serverEnemies, currentWave, 800);
+  
+  serverVariables.serverHealth = game.getHealth();
+  
   if (game.isWaveOver(serverVariables.serverEnemies) === true) {
+
     currentWave++;
     serverVariables.serverEnemies = game.loadWave(currentWave).enemies;
     serverVariables.waveName = game.loadWave(currentWave).waveName;
-    
   }
+
+
+  if (serverVariables.serverHealth <= 0) {
+    serverVariables.serverEnemies = game.loadWave(-1).enemies;
+    serverVariables.waveName = game.loadWave(-1).waveName;
+  }
+
+
   sendUpdate();
 };
 
@@ -111,7 +123,6 @@ const onHitClaim = (sock) => {
 
   socket.on('playerHitClaim', (sentID) => {
     serverVariables.serverEnemies = game.checkHitClaim(serverVariables.serverEnemies, sentID);
-    
     sendUpdate();
   });
 };

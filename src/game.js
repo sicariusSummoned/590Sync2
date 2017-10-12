@@ -2,6 +2,11 @@ let deepCopy = require('lodash/cloneDeep.js');
 
 const gameData = require('./gameData.js');
 
+let health = 10;
+
+const getHealth =() =>{
+  return health;
+}
 
 const moveEnemies = (data) => {
   if (data !== null && data !== undefined) {
@@ -22,19 +27,21 @@ const moveEnemies = (data) => {
 const checkEnemyPosition = (data, barrierHeight) => {
   if (data !== null && data !== undefined) {
     const enemies = data;
-
     const keys = Object.keys(enemies);
-
     for (let i = 0; i < keys.length; i++) {
       const enemy = enemies[keys[i]];
       if (enemy.y > barrierHeight) {
-        delete enemies[keys[i]];
+        enemy.hp = 0;
+        health -= enemy.damage;
+        
+        console.log(health, enemy.damage);
       }
     }
     return enemies;
   }
   return null;
 };
+
 
 const cullDead = (data) => {
   if (data !== null && data !== undefined) {
@@ -61,8 +68,6 @@ const isWaveOver = (data) => {
 
 
     if (keys.length === 0) {
-      console.dir(keys);
-      console.dir(enemies);
       return true;
     }
     return false;
@@ -82,22 +87,25 @@ const loadWave = (wave) => {
 
 
   switch (wave) {
+    case -1:
+      waveData.enemies = deepCopy(gameData.waves.waveEND.waveEnemies);
+      waveData.waveName = gameData.waves.waveEND.waveName;
+      console.log('Game Over');
+      break;
     case 0:
       waveData.enemies = deepCopy(gameData.waves.wave1.waveEnemies);
       waveData.waveName = gameData.waves.wave1.waveName;
       break;
     case 1:
-      console.log('wave 1 reached');
       waveData.enemies = deepCopy(gameData.waves.wave2.waveEnemies);
       waveData.waveName = gameData.waves.wave2.waveName;
       break;
     default:
       waveData.enemies = deepCopy(gameData.waves.wave1.waveEnemies);
       waveData.waveName = gameData.waves.wave1.waveName;
-      //waveData.enemies = gameData.waves.waveEND.waveEnemies;
-      //waveData.waveName = gameData.waves.waveEND.waveName;
-      console.log('Game Over');
       break;
+
+
   }
 
 
@@ -123,6 +131,7 @@ const update = (data, waveVar, canvasHeight) => {
   enemies = cullDead(enemies);
   enemies = checkEnemyPosition(enemies, canvasHeight);
   enemies = moveEnemies(enemies);
+  
   return enemies;
 };
 
@@ -131,4 +140,5 @@ module.exports = {
   loadWave,
   checkHitClaim,
   isWaveOver,
+  getHealth,
 };

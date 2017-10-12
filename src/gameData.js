@@ -10,6 +10,7 @@ const waves = Object.freeze({
         color: 'green',
         speed: 2,
         hp: 1,
+        damage:1,
       },
       1: {
         id: 1,
@@ -19,6 +20,7 @@ const waves = Object.freeze({
         color: 'green',
         speed: 2,
         hp: 1,
+        damage:1,
 
       },
       2: {
@@ -29,6 +31,7 @@ const waves = Object.freeze({
         color: 'green',
         speed: 2,
         hp: 1,
+        damage:1,
 
       },
     },
@@ -44,6 +47,8 @@ const waves = Object.freeze({
         color: 'green',
         speed: 4,
         hp: 1,
+        damage:1,
+
       },
       1: {
         id: 1,
@@ -53,6 +58,8 @@ const waves = Object.freeze({
         color: 'green',
         speed: 4,
         hp: 1,
+        damage:1,
+
 
       },
       2: {
@@ -63,6 +70,7 @@ const waves = Object.freeze({
         color: 'green',
         speed: 4,
         hp: 1,
+        damage:1,
 
       },
     },
@@ -78,6 +86,8 @@ const waves = Object.freeze({
         color: 'green',
         speed: 0,
         hp: 1,
+        damage:1,
+
       },
     },
   },

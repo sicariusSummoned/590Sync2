@@ -2,6 +2,9 @@ let canvas;
 let ctx;
 let displayUserID;
 let displayWaveName;
+let displayHP;
+let displayScore;
+let userScore = 0;
 let socket;
 
 let crossHairs = {};
@@ -46,15 +49,15 @@ const checkForHits = () => {
       console.log(`TargetX:${target.x} TargetY:${target.y}`);
 
       if (mousePosition.x < target.x + target.radius && mousePosition.x > target.x - target.radius) {
-        console.log('x hit correct');
         if (mousePosition.y < target.y + target.radius && mousePosition.y > target.y - target.radius) {
           console.log('hit registered');
           socket.emit('playerHitClaim', target.id);
+          userScore++;
         }
       }
     }
   }
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = 'rgba(255,255,255,100)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
 
@@ -64,6 +67,9 @@ const drawScreen = (data) => {
   drawEnemies(data.serverEnemies);
   drawCrosshairs(data.serverCrosshairs);
   displayWaveName.innerText = data.waveName;
+  console.log(data.serverHealth);
+  displayHP.innerText = data.serverHealth.toString();
+  displayScore.innerText = userScore.toString();
 };
 
 const drawEnemies = (data) => {
@@ -134,6 +140,9 @@ const init = () => {
   socket.on('updateScreen', drawScreen);
   displayUserID = document.querySelector("#playerID");
   displayWaveName = document.querySelector("#waveName");
+  displayHP = document.querySelector("#currentHP");
+  displayScore = document.querySelector("#currentScore");
+  
   setInterval(sendUpdate, 20);
 
   window.addEventListener('mousemove', function (evt) {
