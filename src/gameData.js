@@ -85,7 +85,7 @@ const waves = Object.freeze({
         radius: 30,
         color: 'green',
         speed: 0,
-        hp: 1,
+        hp: 100000000000,
         damage:1,
 
       },

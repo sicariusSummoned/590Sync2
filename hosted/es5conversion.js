@@ -6,8 +6,15 @@ var displayUserID = void 0;
 var displayWaveName = void 0;
 var displayHP = void 0;
 var displayScore = void 0;
+
 var userScore = 0;
 var socket = void 0;
+
+var crossHairImg = void 0;
+var enemyImg = void 0;
+var bgImg = void 0;
+
+console.dir(crossHairImg);
 
 var crossHairs = {};
 var enemies = {};
@@ -22,13 +29,17 @@ var createUser = function createUser() {
   var userID = Math.floor(Math.random() * 10000000).toString();
   myID = userID;
 
-  var color = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')';
+  var color = { r: Math.floor(Math.random() * 255),
+    g: Math.floor(Math.random() * 255),
+    b: Math.floor(Math.random() * 255),
+    a: 0.8
+  };
 
   crossHairs[userID] = {
     x: 0,
     y: 0,
-    width: 5,
-    height: 5,
+    width: 100,
+    height: 100,
     id: myID,
     color: color
   };
@@ -37,6 +48,8 @@ var createUser = function createUser() {
 
   console.dir(crossHairs[userID]);
 };
+
+var tintImage = function tintImage(image, color) {};
 
 var checkForHits = function checkForHits() {
   if (enemies != null && enemies != undefined) {
@@ -58,13 +71,12 @@ var checkForHits = function checkForHits() {
       }
     }
   }
-  ctx.fillStyle = 'rgba(255,255,255,100)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
 
 var drawScreen = function drawScreen(data) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
   drawEnemies(data.serverEnemies);
   drawCrosshairs(data.serverCrosshairs);
   displayWaveName.innerText = data.waveName;
@@ -81,10 +93,7 @@ var drawEnemies = function drawEnemies(data) {
 
     for (var i = 0; i < keys.length; i++) {
       var drawCall = enemies[keys[i]];
-      ctx.fillStyle = drawCall.color;
-      ctx.beginPath();
-      ctx.arc(drawCall.x, drawCall.y, drawCall.radius, 0, 2 * Math.PI);
-      ctx.fill();
+      ctx.drawImage(enemyImg, drawCall.x - drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius * 2, drawCall.radius * 2);
     }
   } else {
     console.log('Enemy data is null');
@@ -98,8 +107,8 @@ var drawCrosshairs = function drawCrosshairs(data) {
 
   for (var i = 0; i < keys.length; i++) {
     var drawCall = crossHairs[keys[i]];
-    ctx.fillStyle = drawCall.color;
-    ctx.fillRect(drawCall.x - drawCall.width / 2, drawCall.y - drawCall.height / 2, drawCall.width, drawCall.height);
+
+    ctx.drawImage(crossHairImg, drawCall.x - drawCall.width / 2, drawCall.y - drawCall.height / 2, drawCall.width, drawCall.height);
   }
 };
 
@@ -138,6 +147,9 @@ var init = function init() {
   displayWaveName = document.querySelector("#waveName");
   displayHP = document.querySelector("#currentHP");
   displayScore = document.querySelector("#currentScore");
+  crossHairImg = document.querySelector("#crosshair");
+  enemyImg = document.querySelector("#zombie");
+  bgImg = document.querySelector("#bg");
 
   setInterval(sendUpdate, 20);
 

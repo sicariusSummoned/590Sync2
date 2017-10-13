@@ -4,8 +4,16 @@ let displayUserID;
 let displayWaveName;
 let displayHP;
 let displayScore;
+
 let userScore = 0;
 let socket;
+
+let crossHairImg;
+let enemyImg;
+let bgImg;
+
+
+console.dir(crossHairImg);
 
 let crossHairs = {};
 let enemies = {};
@@ -20,13 +28,17 @@ const createUser = () => {
   let userID = Math.floor(Math.random() * 10000000).toString();
   myID = userID;
 
-  let color = `rgb(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)})`;
+  let color = {r:Math.floor(Math.random()*255),
+               g:Math.floor(Math.random()*255),
+               b:Math.floor(Math.random()*255),
+               a:0.8,
+              };
 
   crossHairs[userID] = {
     x: 0,
     y: 0,
-    width: 5,
-    height: 5,
+    width: 100,
+    height: 100,
     id: myID,
     color: color
   };
@@ -35,6 +47,10 @@ const createUser = () => {
 
   console.dir(crossHairs[userID]);
 };
+
+const tintImage = (image, color) =>{
+  
+}
 
 const checkForHits = () => {
   if (enemies != null && enemies != undefined) {
@@ -57,13 +73,12 @@ const checkForHits = () => {
       }
     }
   }
-  ctx.fillStyle = 'rgba(255,255,255,0.1)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 };
 
 const drawScreen = (data) => {
   
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bgImg, 0,0, canvas.width, canvas.height);
   drawEnemies(data.serverEnemies);
   drawCrosshairs(data.serverCrosshairs);
   displayWaveName.innerText = data.waveName;
@@ -80,10 +95,7 @@ const drawEnemies = (data) => {
 
     for (let i = 0; i < keys.length; i++) {
       const drawCall = enemies[keys[i]];
-      ctx.fillStyle = drawCall.color;
-      ctx.beginPath();
-      ctx.arc(drawCall.x, drawCall.y, drawCall.radius, 0, 2 * Math.PI);
-      ctx.fill();
+      ctx.drawImage(enemyImg,drawCall.x -drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius*2, drawCall.radius*2);
     }
   } else {
     console.log('Enemy data is null');
@@ -99,8 +111,10 @@ const drawCrosshairs = (data) => {
 
   for (let i = 0; i < keys.length; i++) {
     const drawCall = crossHairs[keys[i]];
-    ctx.fillStyle = drawCall.color;
-    ctx.fillRect(drawCall.x - drawCall.width / 2, drawCall.y - drawCall.height / 2, drawCall.width, drawCall.height);
+    
+    
+    
+    ctx.drawImage(crossHairImg,drawCall.x - drawCall.width/ 2, drawCall.y - drawCall.height/2, drawCall.width, drawCall.height);
   }
 };
 
@@ -142,6 +156,10 @@ const init = () => {
   displayWaveName = document.querySelector("#waveName");
   displayHP = document.querySelector("#currentHP");
   displayScore = document.querySelector("#currentScore");
+  crossHairImg = document.querySelector("#crosshair");
+  enemyImg = document.querySelector("#zombie");
+  bgImg = document.querySelector("#bg");
+
   
   setInterval(sendUpdate, 20);
 

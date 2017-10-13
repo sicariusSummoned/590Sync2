@@ -4,10 +4,10 @@
   "description": "",
   "main": "./src/server.js",
   "scripts": {
-    "start": "node ./src/server.js",
+    "start": "node ./src/app.js",
     "pretest": "eslint ./src --fix",
     "test": "echo \"Tests complete\"",
-    "nodemon": "nodemon --watch ./src ./src/server.js",
+    "nodemon": "nodemon --watch ./src ./src/app.js",
     "build": "babel ./client --out-file ./hosted/es5conversion.js",
     "watch": "babel --watch ./client --out-file ./hosted/es5conversion.js"
   },
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/sicariusSummoned/590Sync2#readme",
   "dependencies": {
+    "express": "^4.16.2",
     "lodash": "^4.17.4",
     "socket.io": "^2.0.3"
   },

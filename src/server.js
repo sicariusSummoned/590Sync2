@@ -1,47 +1,9 @@
-const http = require('http');
-const socketio = require('socket.io');
-const game = require('./game.js');
-const fs = require('fs');
-
-const PORT = process.env.PORT || process.env.NODE_PORT || 3000;
+let io;
+let game = require('./game.js');
 
 let currentWave = 0;
 let runOnce = false;
 let hp = game.getHealth();
-
-const handler = (request, response) => {
-  if (request.url === '/es5conversion.js') {
-    fs.readFile(`${__dirname}/../hosted/es5conversion.js`, (err, data) => {
-      if (err) {
-        throw err;
-      }
-      response.writeHead(200, {
-        'Content-Type': 'application/javascript',
-      });
-
-      response.write(data);
-      response.end();
-    });
-  } else {
-    fs.readFile(`${__dirname}/../hosted/index.html`, (err, data) => {
-      if (err) {
-        throw err;
-      }
-
-      response.writeHead(200, {
-        'Content-Type': 'text/html',
-      });
-
-      response.write(data);
-      response.end();
-    });
-  }
-};
-
-const app = http.createServer(handler);
-const io = socketio(app);
-
-app.listen(PORT);
 
 
 let serverVariables = {
@@ -51,15 +13,17 @@ let serverVariables = {
   serverHealth: hp,
 };
 
+
+
 const sendUpdate = () => {
   io.sockets.in('room1').emit('updateScreen', serverVariables);
 };
 
 const serverUpdate = () => {
   game.update(serverVariables.serverEnemies, currentWave, 800);
-  
+
   serverVariables.serverHealth = game.getHealth();
-  
+
   if (game.isWaveOver(serverVariables.serverEnemies) === true) {
 
     currentWave++;
@@ -127,16 +91,23 @@ const onHitClaim = (sock) => {
   });
 };
 
-io.on('connection', (socket) => {
-  console.log('connection started');
-  serverVariables.serverEnemies = game.loadWave(0).enemies;
-  serverVariables.waveName = game.loadWave(0).waveName;
 
-  onHitClaim(socket);
-  onNewUser(socket);
-  onClientMoved(socket);
-  onDisconnect(socket);
-  sendUpdate();
-});
 
-console.log(`Server opened at 127.0.0.1: ${PORT}`);
+const configure = (ioServer) => {
+  io = ioServer;
+
+
+  io.on('connection', (socket) => {
+    console.log('connection started');
+    serverVariables.serverEnemies = game.loadWave(0).enemies;
+    serverVariables.waveName = game.loadWave(0).waveName;
+
+    onHitClaim(socket);
+    onNewUser(socket);
+    onClientMoved(socket);
+    onDisconnect(socket);
+    sendUpdate();
+  });
+};
+
+module.exports.configure = configure;
