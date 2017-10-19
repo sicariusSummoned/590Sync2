@@ -14,7 +14,9 @@ const serverVariables = {
   serverHealth: hp,
 };
 
-//Sync functions update players to current gamestate, act as a way to sanity check clients with server.
+//Sync functions update players to current 
+//gamestate, act as a way to sanity check 
+//clients with server.
 const syncEnemies = () => {
   io.sockets.in('room1').emit('syncServerEnemies', serverVariables.serverEnemies);
 };
@@ -87,7 +89,10 @@ const onNewUser = (sock) => {
   });
 };
 
-//We are constantly sending and receiving mouse movements, but that's only x y and id so it should be pretty light.
+//We are constantly sending and
+//receiving mouse movements,
+//but that's only x y and id 
+//so it should be pretty light.
 const onClientMoved = (sock) => {
   const socket = sock;
 
