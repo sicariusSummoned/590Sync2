@@ -14,6 +14,11 @@ var crossHairImg = void 0;
 var enemyImg = void 0;
 var bgImg = void 0;
 
+var numFrames = 4;
+var frameIndex = 0;
+var tickCount = 0;
+var ticksPerFrame = 10;
+
 console.dir(crossHairImg);
 
 var crossHairs = {};
@@ -69,6 +74,17 @@ var updateClient = function updateClient() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+  tickCount++;
+  if (tickCount > ticksPerFrame) {
+    tickCount = 0;
+    if (frameIndex < numFrames - 1) {
+      frameIndex++;
+    } else {
+      frameIndex = 0;
+    }
+  }
+
   updateEnemies();
   drawEnemies();
   drawCrosshairs();
@@ -89,7 +105,7 @@ var drawEnemies = function drawEnemies() {
     var keys = Object.keys(enemies);
     for (var i = 0; i < keys.length; i++) {
       var drawCall = enemies[keys[i]];
-      ctx.drawImage(enemyImg, drawCall.x - drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius * 2, drawCall.radius * 2);
+      ctx.drawImage(enemyImg, frameIndex * 64, 0, 64, 64, drawCall.x - drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius * 2, drawCall.radius * 2);
     }
   }
 };
@@ -109,6 +125,7 @@ var drawCrosshairs = function drawCrosshairs() {
     }
 
     ctx.drawImage(crossHairImg, drawCall.x - drawCall.width / 2, drawCall.y - drawCall.height / 2, drawCall.width, drawCall.height);
+
     ctx.restore();
   }
 };

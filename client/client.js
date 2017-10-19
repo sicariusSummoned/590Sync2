@@ -12,6 +12,10 @@ let crossHairImg;
 let enemyImg;
 let bgImg;
 
+const numFrames = 4;
+let frameIndex = 0;
+let tickCount = 0;
+let ticksPerFrame = 10;
 
 console.dir(crossHairImg);
 
@@ -73,9 +77,21 @@ const updateClient = () => {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+  
+  tickCount++;
+  if(tickCount> ticksPerFrame){
+    tickCount = 0;
+    if(frameIndex < numFrames -1){
+      frameIndex++;
+    }else{
+      frameIndex = 0;
+    }
+  }
+  
   updateEnemies();
   drawEnemies();
   drawCrosshairs();
+  
 };
 
 const updateEnemies = () => {
@@ -94,7 +110,7 @@ const drawEnemies = () => {
     let keys = Object.keys(enemies);
     for (let i = 0; i < keys.length; i++) {
       const drawCall = enemies[keys[i]];
-      ctx.drawImage(enemyImg, drawCall.x - drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius * 2, drawCall.radius * 2);
+      ctx.drawImage(enemyImg, frameIndex*64,0,64, 64, drawCall.x - drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius*2, drawCall.radius*2);
     }
   }
 };
@@ -113,8 +129,10 @@ const drawCrosshairs = () => {
     } else {
       ctx.filter = 'hue-rotate(180deg)';
     }
+    
 
     ctx.drawImage(crossHairImg, drawCall.x - drawCall.width / 2, drawCall.y - drawCall.height / 2, drawCall.width, drawCall.height);
+    
     ctx.restore();
   }
 };
