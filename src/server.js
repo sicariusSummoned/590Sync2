@@ -34,6 +34,7 @@ const serverUpdate = () => {
     serverVariables.serverHealth = game.getHealth();
     syncHealth();
   }
+  
 
   if (game.isWaveOver(serverVariables.serverEnemies) === true) {
     currentWave++;
@@ -69,7 +70,7 @@ const onNewUser = (sock) => {
       serverVariables.serverEnemies = game.loadWave(0).enemies;
       serverVariables.waveName = game.loadWave(0).waveName;
       setInterval(serverUpdate, 20);
-      setInterval(syncEnemies, 500);
+      setInterval(syncEnemies, 100);
       runOnce = true;
     }
     syncEnemies();
