@@ -37,7 +37,7 @@ const serverUpdate = () => {
   
 
   if (game.isWaveOver(serverVariables.serverEnemies) === true) {
-    if(wave <9){
+    if(currentWave <9){
           currentWave++;
 
     }else{
