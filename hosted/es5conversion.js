@@ -29,27 +29,18 @@ var createUser = function createUser() {
   var userID = Math.floor(Math.random() * 10000000).toString();
   myID = userID;
 
-  var color = { r: Math.floor(Math.random() * 255),
-    g: Math.floor(Math.random() * 255),
-    b: Math.floor(Math.random() * 255),
-    a: 0.8
-  };
-
   crossHairs[userID] = {
     x: 0,
     y: 0,
     width: 100,
     height: 100,
-    id: myID,
-    color: color
+    id: myID
   };
 
   socket.emit('createdUser', crossHairs[userID]);
 
   console.dir(crossHairs[userID]);
 };
-
-var tintImage = function tintImage(image, color) {};
 
 var checkForHits = function checkForHits() {
   if (enemies != null && enemies != undefined) {
@@ -67,48 +58,58 @@ var checkForHits = function checkForHits() {
           console.log('hit registered');
           socket.emit('playerHitClaim', target.id);
           userScore++;
+          displayScore.innerText = userScore.toString();
         }
       }
     }
   }
 };
 
-var drawScreen = function drawScreen(data) {
+var updateClient = function updateClient() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-  drawEnemies(data.serverEnemies);
-  drawCrosshairs(data.serverCrosshairs);
-  displayWaveName.innerText = data.waveName;
-  console.log(data.serverHealth);
-  displayHP.innerText = data.serverHealth.toString();
-  displayScore.innerText = userScore.toString();
+  updateEnemies();
+  drawEnemies();
+  drawCrosshairs();
 };
 
-var drawEnemies = function drawEnemies(data) {
-  if (data != null && data != undefined) {
-    enemies = data;
-
+var updateEnemies = function updateEnemies() {
+  if (enemies != null && enemies != undefined) {
     var keys = Object.keys(enemies);
+    for (var i = 0; i < keys.length; i++) {
+      var enemy = enemies[keys[i]];
+      enemy.y += enemy.speed;
+    }
+  }
+};
 
+var drawEnemies = function drawEnemies() {
+  if (enemies != null && enemies != undefined) {
+    var keys = Object.keys(enemies);
     for (var i = 0; i < keys.length; i++) {
       var drawCall = enemies[keys[i]];
       ctx.drawImage(enemyImg, drawCall.x - drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius * 2, drawCall.radius * 2);
     }
-  } else {
-    console.log('Enemy data is null');
   }
 };
 
-var drawCrosshairs = function drawCrosshairs(data) {
-  crossHairs = data;
+var drawCrosshairs = function drawCrosshairs() {
 
   var keys = Object.keys(crossHairs);
 
   for (var i = 0; i < keys.length; i++) {
     var drawCall = crossHairs[keys[i]];
 
+    ctx.save();
+    if (drawCall.id === myID) {
+      ctx.filter = 'none';
+    } else {
+      ctx.filter = 'hue-rotate(180deg)';
+    }
+
     ctx.drawImage(crossHairImg, drawCall.x - drawCall.width / 2, drawCall.y - drawCall.height / 2, drawCall.width, drawCall.height);
+    ctx.restore();
   }
 };
 
@@ -131,6 +132,27 @@ var sendUpdate = function sendUpdate() {
   clientMoved(mousePosition);
 };
 
+var syncEnemies = function syncEnemies(data) {
+  console.log('syncing enemies');
+  enemies = data;
+};
+
+var syncName = function syncName(data) {
+  console.log('syncing name');
+
+  displayWaveName.innerText = data;
+};
+
+var syncHealth = function syncHealth(data) {
+  console.log('syncing health');
+
+  displayHP.innerText = data.toString();
+};
+
+var updateCrosshairs = function updateCrosshairs(data) {
+  crossHairs = data;
+};
+
 var init = function init() {
   console.log("init called");
   canvas = document.querySelector("#canvas");
@@ -142,7 +164,10 @@ var init = function init() {
     displayUserID.innerText = myID;
   });
 
-  socket.on('updateScreen', drawScreen);
+  socket.on('syncServerEnemies', syncEnemies);
+  socket.on('syncServerHealth', syncHealth);
+  socket.on('syncServerName', syncName);
+  socket.on('updateCrosshairs', updateCrosshairs);
   displayUserID = document.querySelector("#playerID");
   displayWaveName = document.querySelector("#waveName");
   displayHP = document.querySelector("#currentHP");
@@ -151,10 +176,11 @@ var init = function init() {
   enemyImg = document.querySelector("#zombie");
   bgImg = document.querySelector("#bg");
 
-  setInterval(sendUpdate, 20);
+  setInterval(updateClient, 20);
 
   window.addEventListener('mousemove', function (evt) {
     mousePosition = getMousePosition(canvas, evt);
+    sendUpdate();
   }, false);
 
   window.addEventListener('click', checkForHits);

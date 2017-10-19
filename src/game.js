@@ -1,12 +1,10 @@
-let deepCopy = require('lodash/cloneDeep.js');
+const deepCopy = require('lodash/cloneDeep.js');
 
 const gameData = require('./gameData.js');
 
-let health = 10;
+let health = 30;
 
-const getHealth =() =>{
-  return health;
-}
+const getHealth = () => health;
 
 const moveEnemies = (data) => {
   if (data !== null && data !== undefined) {
@@ -33,7 +31,7 @@ const checkEnemyPosition = (data, barrierHeight) => {
       if (enemy.y > barrierHeight) {
         enemy.hp = 0;
         health -= enemy.damage;
-        
+
         console.log(health, enemy.damage);
       }
     }
@@ -45,7 +43,6 @@ const checkEnemyPosition = (data, barrierHeight) => {
 
 const cullDead = (data) => {
   if (data !== null && data !== undefined) {
-
     const enemies = data;
     const keys = Object.keys(enemies);
 
@@ -66,24 +63,22 @@ const isWaveOver = (data) => {
     const keys = Object.keys(enemies);
 
 
-
     if (keys.length === 0) {
       return true;
     }
     return false;
   }
   return true;
-
 };
 
 
 const loadWave = (wave) => {
   console.log(`Loading wave ${wave}`);
 
-  let waveData = {
+  const waveData = {
     enemies: {},
-    waveName: "null",
-  }
+    waveName: 'null',
+  };
 
 
   switch (wave) {
@@ -100,12 +95,42 @@ const loadWave = (wave) => {
       waveData.enemies = deepCopy(gameData.waves.wave2.waveEnemies);
       waveData.waveName = gameData.waves.wave2.waveName;
       break;
+    case 2:
+      waveData.enemies = deepCopy(gameData.waves.wave3.waveEnemies);
+      waveData.waveName = gameData.waves.wave3.waveName;
+      break;
+    case 3:
+      waveData.enemies = deepCopy(gameData.waves.wave4.waveEnemies);
+      waveData.waveName = gameData.waves.wave4.waveName;
+      break;
+    case 4:
+      waveData.enemies = deepCopy(gameData.waves.wave5.waveEnemies);
+      waveData.waveName = gameData.waves.wave5.waveName;
+      break;
+    case 5:
+      waveData.enemies = deepCopy(gameData.waves.wave6.waveEnemies);
+      waveData.waveName = gameData.waves.wave6.waveName;
+      break;
+    case 6:
+      waveData.enemies = deepCopy(gameData.waves.wave7.waveEnemies);
+      waveData.waveName = gameData.waves.wave7.waveName;
+      break;
+    case 7:
+      waveData.enemies = deepCopy(gameData.waves.wave8.waveEnemies);
+      waveData.waveName = gameData.waves.wave8.waveName;
+      break;
+    case 8:
+      waveData.enemies = deepCopy(gameData.waves.wave9.waveEnemies);
+      waveData.waveName = gameData.waves.wave9.waveName;
+      break;
+    case 9:
+      waveData.enemies = deepCopy(gameData.waves.wave10.waveEnemies);
+      waveData.waveName = gameData.waves.wave10.waveName;
+      break;
     default:
       waveData.enemies = deepCopy(gameData.waves.wave1.waveEnemies);
       waveData.waveName = gameData.waves.wave1.waveName;
       break;
-
-
   }
 
 
@@ -131,7 +156,7 @@ const update = (data, waveVar, canvasHeight) => {
   enemies = cullDead(enemies);
   enemies = checkEnemyPosition(enemies, canvasHeight);
   enemies = moveEnemies(enemies);
-  
+
   return enemies;
 };
 

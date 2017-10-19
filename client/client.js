@@ -28,11 +28,7 @@ const createUser = () => {
   let userID = Math.floor(Math.random() * 10000000).toString();
   myID = userID;
 
-  let color = {r:Math.floor(Math.random()*255),
-               g:Math.floor(Math.random()*255),
-               b:Math.floor(Math.random()*255),
-               a:0.8,
-              };
+
 
   crossHairs[userID] = {
     x: 0,
@@ -40,7 +36,6 @@ const createUser = () => {
     width: 100,
     height: 100,
     id: myID,
-    color: color
   };
 
   socket.emit('createdUser', crossHairs[userID]);
@@ -48,9 +43,6 @@ const createUser = () => {
   console.dir(crossHairs[userID]);
 };
 
-const tintImage = (image, color) =>{
-  
-}
 
 const checkForHits = () => {
   if (enemies != null && enemies != undefined) {
@@ -69,52 +61,60 @@ const checkForHits = () => {
           console.log('hit registered');
           socket.emit('playerHitClaim', target.id);
           userScore++;
+          displayScore.innerText = userScore.toString();
+
         }
       }
     }
   }
 };
 
-const drawScreen = (data) => {
-  
+const updateClient = () => {
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(bgImg, 0,0, canvas.width, canvas.height);
-  drawEnemies(data.serverEnemies);
-  drawCrosshairs(data.serverCrosshairs);
-  displayWaveName.innerText = data.waveName;
-  console.log(data.serverHealth);
-  displayHP.innerText = data.serverHealth.toString();
-  displayScore.innerText = userScore.toString();
+  ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+  updateEnemies();
+  drawEnemies();
+  drawCrosshairs();
 };
 
-const drawEnemies = (data) => {
-  if (data != null && data != undefined) {
-    enemies = data;
-
+const updateEnemies = () => {
+  if (enemies != null && enemies != undefined) {
     let keys = Object.keys(enemies);
+    for (let i = 0; i < keys.length; i++) {
+      const enemy = enemies[keys[i]];
+      enemy.y += enemy.speed;
+    }
+  }
+};
 
+const drawEnemies = () => {
+  if (enemies != null && enemies != undefined) {
+    let keys = Object.keys(enemies);
     for (let i = 0; i < keys.length; i++) {
       const drawCall = enemies[keys[i]];
-      ctx.drawImage(enemyImg,drawCall.x -drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius*2, drawCall.radius*2);
+      ctx.drawImage(enemyImg, drawCall.x - drawCall.radius, drawCall.y - drawCall.radius, drawCall.radius * 2, drawCall.radius * 2);
     }
-  } else {
-    console.log('Enemy data is null');
   }
-
-
 };
 
-const drawCrosshairs = (data) => {
-  crossHairs = data;
+
+const drawCrosshairs = () => {
 
   let keys = Object.keys(crossHairs);
 
   for (let i = 0; i < keys.length; i++) {
     const drawCall = crossHairs[keys[i]];
-    
-    
-    
-    ctx.drawImage(crossHairImg,drawCall.x - drawCall.width/ 2, drawCall.y - drawCall.height/2, drawCall.width, drawCall.height);
+
+    ctx.save();
+    if (drawCall.id === myID) {
+      ctx.filter = 'none';
+    } else {
+      ctx.filter = 'hue-rotate(180deg)';
+    }
+
+    ctx.drawImage(crossHairImg, drawCall.x - drawCall.width / 2, drawCall.y - drawCall.height / 2, drawCall.width, drawCall.height);
+    ctx.restore();
   }
 };
 
@@ -138,20 +138,43 @@ const sendUpdate = () => {
   clientMoved(mousePosition);
 };
 
+const syncEnemies = (data) => {
+  console.log('syncing enemies');
+  enemies = data;
+};
+
+const syncName = (data) => {
+  console.log('syncing name');
+
+  displayWaveName.innerText = data;
+};
+
+const syncHealth = (data) => {
+  console.log('syncing health');
+
+  displayHP.innerText = data.toString();
+};
+
+const updateCrosshairs = (data) => {
+  crossHairs = data;
+};
+
 const init = () => {
   console.log("init called");
   canvas = document.querySelector("#canvas");
   ctx = canvas.getContext("2d");
   socket = io.connect();
-  
-  
-  
+
+
   socket.on('connect', () => {
     createUser();
     displayUserID.innerText = myID;
   });
 
-  socket.on('updateScreen', drawScreen);
+  socket.on('syncServerEnemies', syncEnemies);
+  socket.on('syncServerHealth', syncHealth);
+  socket.on('syncServerName', syncName);
+  socket.on('updateCrosshairs', updateCrosshairs);
   displayUserID = document.querySelector("#playerID");
   displayWaveName = document.querySelector("#waveName");
   displayHP = document.querySelector("#currentHP");
@@ -160,11 +183,12 @@ const init = () => {
   enemyImg = document.querySelector("#zombie");
   bgImg = document.querySelector("#bg");
 
-  
-  setInterval(sendUpdate, 20);
+  setInterval(updateClient, 20);
+
 
   window.addEventListener('mousemove', function (evt) {
     mousePosition = getMousePosition(canvas, evt);
+    sendUpdate();
   }, false);
 
   window.addEventListener('click', checkForHits);

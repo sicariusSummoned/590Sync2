@@ -1,44 +1,55 @@
 let io;
-let game = require('./game.js');
+const game = require('./game.js');
 
 let currentWave = 0;
 let runOnce = false;
-let hp = game.getHealth();
+let gameOver = false;
+const hp = game.getHealth();
 
 
-let serverVariables = {
+const serverVariables = {
   serverCrosshairs: {},
   serverEnemies: {},
-  waveName: "null",
+  waveName: 'null',
   serverHealth: hp,
 };
 
 
+const syncEnemies = () => {
+  io.sockets.in('room1').emit('syncServerEnemies', serverVariables.serverEnemies);
+};
 
-const sendUpdate = () => {
-  io.sockets.in('room1').emit('updateScreen', serverVariables);
+const syncName = () => {
+  io.sockets.in('room1').emit('syncServerName', serverVariables.waveName);
+};
+
+const syncHealth = () => {
+  io.sockets.in('room1').emit('syncServerHealth', serverVariables.serverHealth);
 };
 
 const serverUpdate = () => {
   game.update(serverVariables.serverEnemies, currentWave, 800);
 
-  serverVariables.serverHealth = game.getHealth();
+  if (serverVariables.serverHealth !== game.getHealth) {
+    serverVariables.serverHealth = game.getHealth();
+    syncHealth();
+  }
 
   if (game.isWaveOver(serverVariables.serverEnemies) === true) {
-
     currentWave++;
     serverVariables.serverEnemies = game.loadWave(currentWave).enemies;
     serverVariables.waveName = game.loadWave(currentWave).waveName;
+    syncHealth();
+    syncName();
+    syncEnemies();
   }
-
-
-  if (serverVariables.serverHealth <= 0) {
+  if (serverVariables.serverHealth <= 0 && gameOver === false) {
     serverVariables.serverEnemies = game.loadWave(-1).enemies;
     serverVariables.waveName = game.loadWave(-1).waveName;
+    syncName();
+    syncEnemies();
+    gameOver = true;
   }
-
-
-  sendUpdate();
 };
 
 const onNewUser = (sock) => {
@@ -50,14 +61,20 @@ const onNewUser = (sock) => {
     serverVariables.serverCrosshairs[data.id] = data;
     socket.id = data.id;
     console.log(`Socket.id:${socket.id}`);
-    io.sockets.in('room1').emit('updateScreen', serverVariables);
+    io.sockets.in('room1').emit('updateCrosshairs', serverVariables.serverCrosshairs);
     console.log(`User:${socket.id} has joined.`);
     console.dir(serverVariables.serverCrosshairs);
 
     if (runOnce === false) {
-      setInterval(serverUpdate, 30);
+      serverVariables.serverEnemies = game.loadWave(0).enemies;
+      serverVariables.waveName = game.loadWave(0).waveName;
+      setInterval(serverUpdate, 20);
+      setInterval(syncEnemies, 500);
       runOnce = true;
     }
+    syncEnemies();
+    syncHealth();
+    syncName();
   });
 };
 
@@ -66,7 +83,7 @@ const onClientMoved = (sock) => {
 
   socket.on('clientMoved', (data) => {
     serverVariables.serverCrosshairs[data.id] = data;
-    io.sockets.in('room1').emit('updateScreen', serverVariables);
+    io.sockets.in('room1').emit('updateCrosshairs', serverVariables.serverCrosshairs);
   });
 };
 
@@ -76,9 +93,8 @@ const onDisconnect = (sock) => {
   socket.on('disconnect', () => {
     console.log(`User:${socket.id} has left.`);
     delete serverVariables.serverCrosshairs[socket.id];
-    io.sockets.in('room1').emit('updateScreen', serverVariables);
+    io.sockets.in('room1').emit('updateCrosshairs', serverVariables.serverCrosshairs);
     socket.leave('room1');
-    console.dir(serverVariables.serverCrosshairs);
   });
 };
 
@@ -87,10 +103,9 @@ const onHitClaim = (sock) => {
 
   socket.on('playerHitClaim', (sentID) => {
     serverVariables.serverEnemies = game.checkHitClaim(serverVariables.serverEnemies, sentID);
-    sendUpdate();
+    syncEnemies();
   });
 };
-
 
 
 const configure = (ioServer) => {
@@ -99,14 +114,14 @@ const configure = (ioServer) => {
 
   io.on('connection', (socket) => {
     console.log('connection started');
-    serverVariables.serverEnemies = game.loadWave(0).enemies;
-    serverVariables.waveName = game.loadWave(0).waveName;
 
     onHitClaim(socket);
     onNewUser(socket);
     onClientMoved(socket);
     onDisconnect(socket);
-    sendUpdate();
+    syncEnemies();
+    syncHealth();
+    syncName();
   });
 };
 
