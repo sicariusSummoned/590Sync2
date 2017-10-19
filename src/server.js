@@ -14,7 +14,7 @@ const serverVariables = {
   serverHealth: hp,
 };
 
-
+//Sync functions update players to current gamestate, act as a way to sanity check clients with server.
 const syncEnemies = () => {
   io.sockets.in('room1').emit('syncServerEnemies', serverVariables.serverEnemies);
 };
@@ -27,6 +27,8 @@ const syncHealth = () => {
   io.sockets.in('room1').emit('syncServerHealth', serverVariables.serverHealth);
 };
 
+//Contains level updating logic
+//Server runs this to keep simulation up to date.
 const serverUpdate = () => {
   game.update(serverVariables.serverEnemies, currentWave, 800);
 
@@ -58,6 +60,7 @@ const serverUpdate = () => {
   }
 };
 
+//If you're the first user, remember to launch everything.
 const onNewUser = (sock) => {
   const socket = sock;
 
@@ -84,6 +87,7 @@ const onNewUser = (sock) => {
   });
 };
 
+//We are constantly sending and receiving mouse movements, but that's only x y and id so it should be pretty light.
 const onClientMoved = (sock) => {
   const socket = sock;
 
@@ -104,6 +108,7 @@ const onDisconnect = (sock) => {
   });
 };
 
+//Manages multiple players hitting same object without causing bad indexes
 const onHitClaim = (sock) => {
   const socket = sock;
 

@@ -71,7 +71,7 @@ const isWaveOver = (data) => {
   return true;
 };
 
-
+//Ugly, but functional. If I had more time I would have liked to find a more elegant solution to my loading problem.
 const loadWave = (wave) => {
   console.log(`Loading wave ${wave}`);
 

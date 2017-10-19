@@ -47,7 +47,7 @@ const createUser = () => {
   console.dir(crossHairs[userID]);
 };
 
-
+//Trusting the client on hitting logic, send the hit zombie's id to server to check this. Score is mostly superficial.
 const checkForHits = () => {
   if (enemies != null && enemies != undefined) {
     let keys = Object.keys(enemies);
@@ -72,7 +72,7 @@ const checkForHits = () => {
     }
   }
 };
-
+//Client side update to keep weight off of the server.
 const updateClient = () => {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -99,12 +99,12 @@ const updateEnemies = () => {
     let keys = Object.keys(enemies);
     for (let i = 0; i < keys.length; i++) {
       const enemy = enemies[keys[i]];
-      enemy.y += enemy.speed;
-      
+      enemy.y += enemy.speed;      
     }
   }
 };
 
+//Allows zombies to animate client side. They all move lock step because I don't want to add more properties to each zombie on client side that will be lost when they get refreshed by the server.
 const drawEnemies = () => {
   if (enemies != null && enemies != undefined) {
     let keys = Object.keys(enemies);
@@ -115,7 +115,8 @@ const drawEnemies = () => {
   }
 };
 
-
+//Other players show up as /greenish/
+//You show up as red
 const drawCrosshairs = () => {
 
   let keys = Object.keys(crossHairs);
@@ -202,6 +203,7 @@ const init = () => {
   enemyImg = document.querySelector("#zombie");
   bgImg = document.querySelector("#bg");
 
+  
   setInterval(updateClient, 20);
 
 

@@ -1,3 +1,4 @@
+//In hindsight It would have been smarter to have the waves just hold number of each 'type' of enemy and then spawn them serverside (with calls to spawn them at the correct positions on client side like Cody did with the particles.
 const waves = Object.freeze({
   wave1: {
     waveName: 'Easy Going',
