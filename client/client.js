@@ -84,6 +84,7 @@ const updateEnemies = () => {
     for (let i = 0; i < keys.length; i++) {
       const enemy = enemies[keys[i]];
       enemy.y += enemy.speed;
+      
     }
   }
 };

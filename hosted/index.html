@@ -6,6 +6,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script src="/assets/es5conversion.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Creepster|Nosifer|Open+Sans" rel="stylesheet">
   <style>
     html,
     body {
@@ -13,11 +14,25 @@
       height: 100%;
       margin: 0;
       padding: 0;
+      font-family: 'Creepster', cursive;
+    }
+    
+    html {
+      background-image: url(/assets/spookyForest.jpg);
+      background-repeat: no-repeat;
+    }
+    
+    h1,
+    h4 {
+      text-align: center;
+      color: darkorange;
     }
     
     canvas {
       margin: 10px;
       border: 1px solid black;
+      display: block;
+      margin: auto;
     }
     
     p {
@@ -26,21 +41,41 @@
       width: 50%;
     }
     
-
     img {
-      display:none;
+      display: none;
     }
+    
+    #currentHP {
+      color: red;
+      margin-right: 20px;
+    }
+    
+    #currentScore {
+      color: yellow;
+    }
+    
+    #waveName {
+      margin-right: 20px;
+    }
+    #display{
+      background-color:black;
+      width:600px;
+      margin: auto;
+    }
+
   </style>
 </head>
 
 <body>
-  <h1><span id="waveName">Waiting for more players</span> HP: <span id="currentHP">10</span> SCORE: <span id="currentScore">0</span></h1>
-  <h4>You user-ID: <span id="playerID"></span></h4>
+  <div id="display">
+    <h1><span id="waveName">Waiting for more players. . .</span> HP: <span id="currentHP">10</span> SCORE: <span id="currentScore">0</span></h1>
+    <h4>You user-ID: <span id="playerID"></span></h4>
+  </div>
   <canvas id="canvas" height="800" width="600">Please use a Canvas compatible browser!</canvas>
-  
-  <img id="crosshair" src="/assets/Crosshair.png" alt="xhairSprite"/>
-  <img id="zombie" src="/assets/zambie.png" alt="zombieSprite"/>
-  <img id="bg" src="/assets/grassBG.jpg" alt = "beegees"/>
+
+  <img id="crosshair" src="/assets/Crosshair.png" alt="xhairSprite" />
+  <img id="zombie" src="/assets/zambie.png" alt="zombieSprite" />
+  <img id="bg" src="/assets/spookyForest2.jpg" alt="beegees" />
 </body>
 
 </html>

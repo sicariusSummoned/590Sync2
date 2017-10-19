@@ -37,7 +37,12 @@ const serverUpdate = () => {
   
 
   if (game.isWaveOver(serverVariables.serverEnemies) === true) {
-    currentWave++;
+    if(wave <9){
+          currentWave++;
+
+    }else{
+      currentWave = 0;
+    }
     serverVariables.serverEnemies = game.loadWave(currentWave).enemies;
     serverVariables.waveName = game.loadWave(currentWave).waveName;
     syncHealth();
